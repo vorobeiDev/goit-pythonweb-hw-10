@@ -20,7 +20,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from src.database.models import Base
-from src.conf.config import config as app_config
+from src.conf.config import settings as app_config
 
 target_metadata = Base.metadata
 print(Base.metadata.tables.keys())
