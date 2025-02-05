@@ -49,14 +49,14 @@ async def register_user(
     if email_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Користувач з таким email вже існує",
+            detail="User with this email already exists",
         )
 
     username_user = await user_service.get_user_by_username(user_data.username)
     if username_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Користувач з таким іменем вже існує",
+            detail="User with this username already exists",
         )
     user_data.password = Hash().get_password_hash(user_data.password)
     new_user = await user_service.create_user(user_data)
@@ -101,9 +101,9 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error"
         )
     if user.confirmed:
-        return {"message": "Ваша електронна пошта вже підтверджена"}
+        return {"message": "Your email has been confirmed"}
     await user_service.confirmed_email(email)
-    return {"message": "Електронну пошту підтверджено"}
+    return {"message": "Email is confirmed"}
 
 
 @router.post("/request_email")
@@ -117,9 +117,9 @@ async def request_email(
     user = await user_service.get_user_by_email(body.email)
 
     if user.confirmed:
-        return {"message": "Ваша електронна пошта вже підтверджена"}
+        return {"message": "Your email has been confirmed"}
     if user:
         background_tasks.add_task(
             send_email, user.email, user.username, request.base_url
         )
-    return {"message": "Перевірте свою електронну пошту для підтвердження"}
+    return {"message": "Check your email for confirmation"}
